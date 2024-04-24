@@ -43,32 +43,13 @@ class BrtEveRP2040():
             #SPI for Eve
             self.spi_eve = busio.SPI(board.GP2, MOSI=board.GP3, MISO=board.GP4)
 
-            #SPI for SD card
-            self.spi_sdcard = busio.SPI(board.GP10, MOSI=board.GP11, MISO=board.GP12)
-
         self.pin_cs = pin(board.GP5) #cs of SPI for Eve
         self.pin_pdn = pin(board.GP7) #power down pin of Eve
 
         self.pin_cs_eve_ili9488 = pin(board.GP9) #CSX pin of ILI9488
         self.pin_dcx_eve_ili9488 = pin(board.GP8) #D/CX pin of ILI9488
 
-        self.pin_cs_sdcard = board.GP13 #cs of SPI for SD card
-
-        if not self._setup_sd(self.pin_cs_sdcard):
-            pin(self.pin_cs_sdcard)
-
-		#configure SPI for Eve
         self._setup_spi()
-
-    def _setup_sd(self, sdcs):
-        """ Setup sdcard"""
-        try:
-            self.sdcard = sdcardio.SDCard(self.spi_sdcard, sdcs)
-        except OSError:
-            return False
-        self.vfs = storage.VfsFat(self.sdcard)
-        storage.mount(self.vfs, "/sd")
-        return True
 
     @spilock
     def _setup_spi(self):
